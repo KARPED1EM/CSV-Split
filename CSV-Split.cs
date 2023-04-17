@@ -22,9 +22,10 @@ internal static class Program
         ReadFile(ref main, PATH_0);
         while (true)
         {
-            Console.WriteLine("\n1: 一键分割\n2: 自定义分割文件\n3: 合并文件\n");
+            Console.WriteLine("\n1: 一键分割\n2: 自定义分割文件\n3: 一键合并\n4: 自定义合并文件\n");
+            Console.Write("选择需要执行的操作: ");
             var input = Console.ReadLine();
-            if (input?.ToLower() == "exit") break;
+            if (input?.ToLower() == "0") break;
             Console.Clear();
             if (!int.TryParse(input, out var op)) continue;
             switch (op)
@@ -32,17 +33,30 @@ internal static class Program
                 case 1:
                     Split(main, PATH_1, "13 0 5 14");
                     Split(main, PATH_2, "13 12");
-
                     break;
                 case 2:
                     Split(main, PATH_1);
                     break;
                 case 3:
                     CsvFile f1 = new();
-                    Console.Write("读取待合并文件 => ");
+                    CsvFile f2 = new();
+                    Console.Write("读取待合并文件1 => ");
                     ReadFile(ref f1, PATH_1);
+                    Console.Write("读取待合并文件2 => ");
+                    ReadFile(ref f2, PATH_2);
                     Console.WriteLine("-----------------------------------");
-                    Merge(main, f1, PATH_Result);
+                    Merge(main, f1, PATH_0);
+                    Merge(main, f2, PATH_0);
+                    break;
+                case 4:
+                    Console.Write("需要合并的文件: ");
+                    var inputToMerge = Console.ReadLine();
+                    if (inputToMerge != null)
+                    {
+                        CsvFile fc = new();
+                        ReadFile(ref fc, "../../../../" + inputToMerge + ".csv");
+                        Merge(main, fc, PATH_Result);
+                    }
                     break;
             }
             Console.WriteLine("-----------------------------------");
