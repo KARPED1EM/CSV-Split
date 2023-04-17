@@ -85,6 +85,9 @@ internal static class Program
                     break;
             }
             Console.WriteLine("-----------------------------------");
+            Console.Write("\n按任意键继续...");
+            Console.ReadLine();
+            Console.Clear();
         }
     }
 
