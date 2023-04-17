@@ -122,8 +122,15 @@ internal static class Program
                 for (int i = 1; i < line.ColumnCount; i++)
                 {
                     sb.Append($",\"{line.Values[i]}\"");
-                    if (int.TryParse(line.Headers[i], out var id))
-                        dic[id] = line.Values[i];
+                    try
+                    {
+                        if (int.TryParse(line.Headers[i], out var id))
+                            dic[id] = line.Values[i];
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"Header: {i} => {line.Index}行 超出翻译范围");
+                    }
                 }
                 if (!file.map.TryAdd(line.Values[0], dic))
                     Console.WriteLine($"重复项：第{line.Index}行 => \"{line.Values[0]}\"");
@@ -211,7 +218,7 @@ internal static class Program
             }
             foreach (var single in str.Value)
             {
-                if (!target.langs.Contains(single.Key.ToString()) || single.Key == 13)
+                if (!target.langs.Contains(single.Key.ToString()) || single.Key == 13 || !target.map.ContainsKey(str.Key) || !target.map[str.Key].ContainsKey(single.Key))
                     sb.Append($",\"{single.Value}\"");
                 else
                     sb.Append($",\"{target.map[str.Key][single.Key]}\"");
