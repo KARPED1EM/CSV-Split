@@ -3,9 +3,9 @@ using System.Text;
 
 static class Program
 {
-    static string PATH_0 = "../../../../TOHE/Resources/String.csv";
-    static string PATH_1 = "../../../../String1.csv";
-    static string PATH_2 = "../../../../String2.csv";
+    static readonly string PATH_0 = "../../../../TOHE/Resources/String.csv";
+    static readonly string PATH_1 = "../../../../String1.csv";
+    static readonly string PATH_2 = "../../../../String2.csv";
 
     static Dictionary<string, Dictionary<int, string>> map = new();
     static List<string> langs = new();
