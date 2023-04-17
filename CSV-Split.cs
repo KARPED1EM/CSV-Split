@@ -1,22 +1,22 @@
 ﻿using Csv;
 using System.Text;
 
-static class Program
+internal static class Program
 {
-    static readonly string PATH_0 = "../../../../TOHE/Resources/String.csv";
-    static readonly string PATH_1 = "../../../../String1.csv";
-    static readonly string PATH_2 = "../../../../String2.csv";
-    static readonly string PATH_Result = "../../../../Result.csv";
+    private static readonly string PATH_0 = "../../../../TOHE/Resources/String.csv";
+    private static readonly string PATH_1 = "../../../../String1.csv";
+    private static readonly string PATH_2 = "../../../../String2.csv";
+    private static readonly string PATH_Result = "../../../../Result.csv";
 
-    class CsvFile
+    private class CsvFile
     {
         public Dictionary<string, Dictionary<int, string>> map = new();
         public Dictionary<int, string> notes = new();
         public List<string> langs = new();
         public int endLine;
     }
-    
-    static void Main()
+
+    private static void Main()
     {
         CsvFile main = new();
         ReadFile(ref main, PATH_0);
@@ -32,7 +32,7 @@ static class Program
                 case 1:
                     Split(main, PATH_1, "13 0 5 14");
                     Split(main, PATH_2, "13 12");
-                    
+
                     break;
                 case 2:
                     Split(main, PATH_1);
@@ -49,7 +49,7 @@ static class Program
         }
     }
 
-    static bool ReadFile(ref CsvFile file, string path, bool cache = false)
+    private static bool ReadFile(ref CsvFile file, string path, bool cache = false)
     {
         file.map = new();
         file.notes = new();
@@ -107,7 +107,7 @@ static class Program
         return true;
     }
 
-    static bool Split(CsvFile file, string path, string ip = "")
+    private static bool Split(CsvFile file, string path, string ip = "")
     {
         string input;
         if (ip == "")
@@ -149,7 +149,7 @@ static class Program
         return true;
     }
 
-    static bool Merge(CsvFile main, CsvFile target, string path)
+    private static bool Merge(CsvFile main, CsvFile target, string path)
     {
         var sb = new StringBuilder();
 
@@ -178,13 +178,9 @@ static class Program
             foreach (var single in str.Value)
             {
                 if (!target.langs.Contains(single.Key.ToString()) || single.Key == 13)
-                {
                     sb.Append($",\"{single.Value}\"");
-                }
                 else
-                {
                     sb.Append($",\"{target.map[str.Key][single.Key]}\"");
-                }
             }
             sb.Append('\n');
         }
