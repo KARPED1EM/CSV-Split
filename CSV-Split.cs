@@ -22,8 +22,8 @@ internal static class Program
         ReadFile(ref main, PATH_0);
         while (true)
         {
-            Console.WriteLine("\n1: 一键分割\n2: 自定义分割文件\n3: 一键合并\n4: 自定义合并文件\n");
-            Console.Write("选择需要执行的操作: ");
+            Console.WriteLine("\n1: 一键分割\n2: 自定义分割文件\n3: 一键合并\n4: 自定义合并文件\n5. 添加语言模板\n6. 输出数据");
+            Console.Write("\n选择需要执行的操作: ");
             var input = Console.ReadLine();
             if (input?.ToLower() == "0") break;
             Console.Clear();
@@ -57,6 +57,26 @@ internal static class Program
                         ReadFile(ref fc, "../../../../" + inputToMerge + ".csv");
                         Merge(main, fc, PATH_Result);
                     }
+                    break;
+                case 5:
+                    var msg = "";
+                    msg += "### English = 0 / Latam = 1 / Brazilian = 2 / Portuguese = 3\n";
+                    msg += "### Korean = 4 / Russian = 5 / Dutch = 6 / Filipino = 7\n";
+                    msg += "### French = 8 / German = 9 / Italian = 10 / Japanese = 11\n";
+                    msg += "### Spanish = 12 / SChinese = 13 / TChinese = 14 / Irish = 15\n";
+                    Console.WriteLine(msg);
+                    Console.Write("需要添加的语言ID: ");
+                    var id = Console.ReadLine();
+                    Console.WriteLine("-----------------------------------");
+                    if (!int.TryParse(id, out var x))
+                        Console.WriteLine("输入的ID错误");
+                    else NewLang(ref main, x);
+                    break;
+                case 6:
+                    Output(main, PATH_Result);
+                    break;
+                default:
+                    ReadFile(ref main, PATH_0);
                     break;
             }
             Console.WriteLine("-----------------------------------");
@@ -102,8 +122,8 @@ internal static class Program
                 for (int i = 1; i < line.ColumnCount; i++)
                 {
                     sb.Append($",\"{line.Values[i]}\"");
-                    int id = int.Parse(line.Headers[i]);
-                    dic[id] = line.Values[i];
+                    if (int.TryParse(line.Headers[i], out var id))
+                        dic[id] = line.Values[i];
                 }
                 if (!file.map.TryAdd(line.Values[0], dic))
                     Console.WriteLine($"重复项：第{line.Index}行 => \"{line.Values[0]}\"");
@@ -137,7 +157,7 @@ internal static class Program
         if (!File.Exists(path))
         {
             Console.WriteLine($"创建新文件：{path}");
-            File.Create(path);
+            File.Create(path).Close();
         }
         var sb = new StringBuilder();
         sb.Append("\"id\"");
@@ -151,7 +171,7 @@ internal static class Program
                 if (!int.TryParse(l, out var ln)) return false;
                 if (!line.Value.ContainsKey(ln))
                 {
-                    Console.WriteLine($"未找到语言：{ln}");
+                    Console.WriteLine($"未找到翻译：{ln} => {line.Key}");
                     return false;
                 }
                 sb.Append($",\"{line.Value[ln]}\"");
@@ -199,7 +219,57 @@ internal static class Program
             sb.Append('\n');
         }
 
-        if (!File.Exists(path)) File.Create(path);
+        if (!File.Exists(path)) File.Create(path).Close();
+        File.WriteAllText(path, sb.ToString());
+        Console.WriteLine($"写到文件：{Path.GetFullPath(path)}");
+        return false;
+    }
+
+    private static void NewLang(ref CsvFile file, int id)
+    {
+        if (file.langs.Contains(id.ToString()))
+        {
+            Console.WriteLine("已存在该语言");
+            return;
+        }
+        file.langs.Add(id.ToString());
+
+        Dictionary<string, Dictionary<int, string>> newMap = new();
+        foreach (var single in file.map)
+        {
+            var str = single.Value;
+            str.Add(id, "");
+            newMap.Add(single.Key, str);
+        }
+        file.map = newMap;
+        Console.WriteLine("新语言已添加至缓存数据");
+    }
+
+    private static bool Output(CsvFile main, string path)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("\"id\"");
+        foreach (var l in main.langs) sb.Append($",\"{l}\"");
+        sb.Append('\n');
+
+        int index = 1;
+        foreach (var str in main.map)
+        {
+        Start:
+            index++;
+            if (main.notes.ContainsKey(index))
+            {
+                sb.Append(main.notes[index] + "\n");
+                goto Start;
+            }
+            sb.Append($"\"{str.Key}\"");
+            foreach (var single in str.Value)
+                sb.Append($",\"{single.Value}\"");
+            sb.Append('\n');
+            continue;
+        }
+        if (!File.Exists(path)) File.Create(path).Close();
         File.WriteAllText(path, sb.ToString());
         Console.WriteLine($"写到文件：{Path.GetFullPath(path)}");
         return false;
