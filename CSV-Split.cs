@@ -38,15 +38,20 @@ internal static class Program
                     Split(main, PATH_1);
                     break;
                 case 3:
-                    CsvFile f1 = new();
-                    CsvFile f2 = new();
-                    Console.Write("读取待合并文件1 => ");
-                    ReadFile(ref f1, PATH_1);
-                    Console.Write("读取待合并文件2 => ");
-                    ReadFile(ref f2, PATH_2);
-                    Console.WriteLine("-----------------------------------");
-                    Merge(main, f1, PATH_0);
-                    Merge(main, f2, PATH_0);
+                    if (File.Exists(PATH_2))
+                    {
+                        CsvFile f1 = new();
+                        Console.Write("读取待合并文件1 => ");
+                        ReadFile(ref f1, PATH_1);
+                        Merge(main, f1, PATH_0);
+                    }
+                    if (File.Exists(PATH_2))
+                    {
+                        CsvFile f2 = new();
+                        Console.Write("读取待合并文件2 => ");
+                        ReadFile(ref f2, PATH_2);
+                        Merge(main, f2, PATH_0);
+                    }
                     break;
                 case 4:
                     Console.Write("需要合并的文件: ");
